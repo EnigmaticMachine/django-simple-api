@@ -1,0 +1,5 @@
+pytest==8.2.2
+pytest-django==4.8.0
+requests==2.32.3
+pytest-sugar==1.0.0
+pytest-xdist==3.6.1

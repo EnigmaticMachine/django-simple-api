@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: "python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+      - .env.test
+    networks:
+      - pytestnetwork
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_data:/code
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pytestnetwork
+    ports:
+      - "5432:5432"
+
+networks:
+  pytestnetwork:
+
+volumes:
+  postgres_data:
+  backend_data:
