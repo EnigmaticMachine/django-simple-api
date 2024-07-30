@@ -1,9 +1,26 @@
-# api/urls.py
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import (
+    AttributeNameViewSet,
+    AttributeValueViewSet,
+    AttributeViewSet,
+    ProductViewSet,
+    ProductAttributesViewSet,
+    ImageViewSet,
+    ProductImageViewSet,
+    CatalogViewSet,
+)
+
+router = DefaultRouter()
+router.register(r"attributenames", AttributeNameViewSet)
+router.register(r"attributevalues", AttributeValueViewSet)
+router.register(r"attributes", AttributeViewSet)
+router.register(r"products", ProductViewSet)
+router.register(r"productattributes", ProductAttributesViewSet)
+router.register(r"images", ImageViewSet)
+router.register(r"productimages", ProductImageViewSet)
+router.register(r"catalogs", CatalogViewSet)
 
 urlpatterns = [
-    path("import/", views.import_data, name="import_data"),
-    path("detail/<str:model_name>/", views.model_list, name="model_list"),
-    path("detail/<str:model_name>/<int:id>/", views.model_detail, name="model_detail"),
+    path("", include(router.urls)),
 ]
