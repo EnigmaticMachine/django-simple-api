@@ -6,8 +6,8 @@
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
   - [Environment Variables](#environment-variables)
-  - [Build and Run](#build-and-run)
-- [Running Tests](#running-tests)
+  - [Build and Run](#makefile-commands)
+- [Running Tests](#makefile-commands)
 - [Makefile Commands](#makefile-commands)
 - [Docker Configuration](#docker-configuration)
 - [Contact](#contact)
@@ -29,17 +29,21 @@ In the root of the project, you will find the `Makefile`. This file is designed 
 
 Create a `.env` file in the root directory of your project and add the following environment variables:
 
+```
 DJANGO_SECRET_KEY=your_secret_key
 DJANGO_SUPERUSER_USERNAME=your_admin_username
 DJANGO_SUPERUSER_EMAIL=your_admin_email@example.com
 DJANGO_SUPERUSER_PASSWORD=your_admin_password
 DATABASE_URL=postgres://username:password@postgres:5432/dbname
+```
 
 Create a `.env.test` file in the root directory of your project and add the following environment variables:
 
+```
 DJANGO_ENV=test
 DEBUG=True
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],backend,nginx
+```
 
 ## Makefile Commands
 
