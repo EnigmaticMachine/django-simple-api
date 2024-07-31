@@ -110,20 +110,12 @@ The `Dockerfile` sets up the environment for the Django application, installs de
 
 ## Testing Data Import and Verification
 
-To test the data import and verify the endpoints, you can use the provided Makefile target.
+To test the data import and verify the endpoints, you can use Makefile command.
 
 ### Usage
 
-1. Ensure your Django application is running `make up`.
-2. Execute the following Makefile command:
+Execute the following Makefile command:
 
 `make import-verify`
 
 The command will run a script that imports test data and verifies the catalog, attribute, and product endpoints.
-
-### Additional Steps
-
-1. **Add the script to the `scripts` directory**:
-   ```sh
-   mkdir scripts
-   ```
