@@ -1,6 +1,7 @@
-# your_app/views.py
-
-from rest_framework import viewsets
+# views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .models import (
     AttributeName,
     AttributeValue,
@@ -21,43 +22,72 @@ from .serializers import (
     ProductImageSerializer,
     CatalogSerializer,
 )
+from django.shortcuts import get_object_or_404
+
+model_mapping = {
+    "AttributeName": (AttributeName, AttributeNameSerializer),
+    "AttributeValue": (AttributeValue, AttributeValueSerializer),
+    "Attribute": (Attribute, AttributeSerializer),
+    "Product": (Product, ProductSerializer),
+    "ProductAttributes": (ProductAttributes, ProductAttributesSerializer),
+    "Image": (Image, ImageSerializer),
+    "ProductImage": (ProductImage, ProductImageSerializer),
+    "Catalog": (Catalog, CatalogSerializer),
+}
 
 
-class AttributeNameViewSet(viewsets.ModelViewSet):
-    queryset = AttributeName.objects.all()
-    serializer_class = AttributeNameSerializer
+class ImportDataView(APIView):
+    def post(self, request):
+        data = request.data
+        if isinstance(data, list):
+            for item in data:
+                for model_name, model_data in item.items():
+                    model_class, serializer_class = model_mapping.get(
+                        model_name, (None, None)
+                    )
+                    if model_class and serializer_class:
+                        serializer = serializer_class(data=model_data)
+                        if serializer.is_valid():
+                            serializer.save()
+                        else:
+                            return Response(
+                                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                            )
+                    else:
+                        return Response(
+                            {"error": "Unknown model name"},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+        else:
+            return Response(
+                {"error": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(
+            {"message": "Data imported successfully"}, status=status.HTTP_201_CREATED
+        )
 
 
-class AttributeValueViewSet(viewsets.ModelViewSet):
-    queryset = AttributeValue.objects.all()
-    serializer_class = AttributeValueSerializer
+class ModelDetailListView(APIView):
+    def get(self, request, model_name):
+        model_class, serializer_class = model_mapping.get(model_name, (None, None))
+        if model_class and serializer_class:
+            queryset = model_class.objects.all()
+            serializer = serializer_class(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"error": "Unknown model name"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
-class AttributeViewSet(viewsets.ModelViewSet):
-    queryset = Attribute.objects.all()
-    serializer_class = AttributeSerializer
-
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-
-class ProductAttributesViewSet(viewsets.ModelViewSet):
-    queryset = ProductAttributes.objects.all()
-    serializer_class = ProductAttributesSerializer
-
-
-class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
-
-
-class ProductImageViewSet(viewsets.ModelViewSet):
-    queryset = ProductImage.objects.all()
-    serializer_class = ProductImageSerializer
-
-
-class CatalogViewSet(viewsets.ModelViewSet):
-    queryset = Catalog.objects.all()
-    serializer_class = CatalogSerializer
+class ModelDetailView(APIView):
+    def get(self, request, model_name, pk):
+        model_class, serializer_class = model_mapping.get(model_name, (None, None))
+        if model_class and serializer_class:
+            instance = get_object_or_404(model_class, pk=pk)
+            serializer = serializer_class(instance)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"error": "Unknown model name"}, status=status.HTTP_400_BAD_REQUEST
+            )
