@@ -5,9 +5,6 @@ BASE_URL="http://localhost:8000"
 
 # Define the endpoint URLs
 IMPORT_URL="${BASE_URL}/import/"
-CATALOG_URL="${BASE_URL}/detail/catalog/1/"
-ATTRIBUTE_URL="${BASE_URL}/detail/attribute/3/"
-PRODUCT_URL="${BASE_URL}/detail/product/1/"
 
 # Define the data to be sent
 DATA='[
