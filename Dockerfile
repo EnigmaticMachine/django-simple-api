@@ -16,11 +16,11 @@ COPY requirements.txt /code/
 # Install project dependencies
 RUN pip install -r /code/requirements.txt
 
-
 # Copy the project files
 COPY . /code/
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY entrypoint.sh /code/entrypoint.sh
+RUN chmod +x /code/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Set the entrypoint
+ENTRYPOINT ["/code/entrypoint.sh"]
