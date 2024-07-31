@@ -53,12 +53,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# class CatalogSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Catalog
-#         fields = "__all__"
-
-
 class CatalogSerializer(serializers.ModelSerializer):
     products_ids = serializers.ListField(
         write_only=True, child=serializers.IntegerField(), source="products"

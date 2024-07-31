@@ -1,6 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 from .models import (
     AttributeName,
     AttributeValue,
@@ -21,7 +23,6 @@ from .serializers import (
     ProductImageSerializer,
     CatalogSerializer,
 )
-from django.shortcuts import get_object_or_404
 
 model_mapping = {
     "attribute": (Attribute, AttributeSerializer),
