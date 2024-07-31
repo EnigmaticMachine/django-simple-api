@@ -10,7 +10,7 @@
 - [Running Tests](#makefile-commands)
 - [Makefile Commands](#makefile-commands)
 - [Docker Configuration](#docker-configuration)
-- [Contact](#contact)
+- [Testing Data Import and Verification](#testing-data-import-and-verification)
 
 ## Introduction
 
@@ -27,22 +27,30 @@ In the root of the project, you will find the `Makefile`. This file is designed 
 
 ### Environment Variables
 
-Create a `.env` file in the root directory of your project and add the following environment variables:
+Use command `make init` to create a `.env` file in the root directory:
 
 ```
-DJANGO_SECRET_KEY=your_secret_key
-DJANGO_SUPERUSER_USERNAME=your_admin_username
-DJANGO_SUPERUSER_EMAIL=your_admin_email@example.com
-DJANGO_SUPERUSER_PASSWORD=your_admin_password
-DATABASE_URL=postgres://username:password@postgres:5432/dbname
+DJANGO_SECRET_KEY=your-secret-key
+DJANGO_SUPERUSER_USERNAME=username
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=supersecretpassword
+
+DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+POSTGRES_DB=mydatabase
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
+DJANGO_ENV=dev
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],backend
 ```
 
-Create a `.env.test` file in the root directory of your project and add the following environment variables:
+And `.env.test` file in the root directory:
 
 ```
 DJANGO_ENV=test
 DEBUG=True
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],backend,nginx
 ```
 
 ## Makefile Commands
@@ -59,6 +67,7 @@ The `Makefile` contains various commands to simplify common tasks:
 - `make logs`: Follow logs of Docker containers for development.
 - `make migrate`: Run database migrations for development.
 - `make createsuperuser`: Create a superuser for development.
+- `make import-verify`: Run the import and verification script.
 - `make shell`: Open a Django shell for development.
 - `make clean`: Clean up Docker containers, images, and volumes for development.
 - `make test-build`: Build the Docker images for testing.
@@ -98,3 +107,23 @@ The `Dockerfile` sets up the environment for the Django application, installs de
 
 - `docker-compose.yml`: Defines the services for the development environment, including the Django application and PostgreSQL database.
 - `docker-compose.test.yml`: Defines the services for the testing environment.
+
+## Testing Data Import and Verification
+
+To test the data import and verify the endpoints, you can use the provided Makefile target.
+
+### Usage
+
+1. Ensure your Django application is running `make up`.
+2. Execute the following Makefile command:
+
+`make import-verify`
+
+The command will run a script that imports test data and verifies the catalog, attribute, and product endpoints.
+
+### Additional Steps
+
+1. **Add the script to the `scripts` directory**:
+   ```sh
+   mkdir scripts
+   ```
