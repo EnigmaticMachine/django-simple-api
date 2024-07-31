@@ -12,9 +12,32 @@ help: ## Show this help message
 .PHONY: init
 init: ## Init environment
 	@echo "Initializing environment..."
-	@chmod +x ./entrypoint.sh || (echo "Failed to set permissions for /code/entrypoint.sh" && exit 1)
-	@if [ ! -f .env ]; then echo ".env file does not exist"; fi
-	@if [ ! -f .env.test ]; then echo ".env.test file does not exist"; fi
+	@chmod +x ./scripts/entrypoint.sh || (echo "Failed to set permissions for ./scripts/entrypoint.sh" && exit 1)
+	@chmod +x ./scripts/test_import_and_verify.sh || (echo "Failed to set permissions for ./scripts/test_import_and_verify.sh" && exit 1)
+	@if [ ! -f .env ]; then \
+		echo "DJANGO_SECRET_KEY=your-secret-key" > .env; \
+		echo "DJANGO_SUPERUSER_USERNAME=username" >> .env; \
+		echo "DJANGO_SUPERUSER_EMAIL=admin@example.com" >> .env; \
+		echo "DJANGO_SUPERUSER_PASSWORD=supersecretpassword" >> .env; \
+		echo "DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase" >> .env; \
+		echo "POSTGRES_DB=mydatabase" >> .env; \
+		echo "POSTGRES_USER=myuser" >> .env; \
+		echo "POSTGRES_PASSWORD=mypassword" >> .env; \
+		echo "POSTGRES_HOST=db" >> .env; \
+		echo "POSTGRES_PORT=5432" >> .env; \
+		echo "DJANGO_ENV=dev" >> .env; \
+		echo "DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],backend" >> .env; \
+		echo ".env file created"; \
+	else \
+		echo ".env file already exists"; \
+	fi
+	@if [ ! -f .env.test ]; then \
+		echo "DJANGO_ENV=test" > .env.test; \
+		echo "DEBUG=True" >> .env.test; \
+		echo ".env.test file created"; \
+	else \
+		echo ".env.test file already exists"; \
+	fi
 	@echo "Environment initialized."
 
 # devlopment targets
@@ -42,6 +65,15 @@ migrate: ## Run database migrations for devlopment
 .PHONY: createsuperuser
 createsuperuser: ## Create a superuser for devlopment
 	$(DC) -f $(COMPOSE_FILE) run backend python manage.py createsuperuser
+
+
+.PHONY: import-verify
+import-verify: ## Run the import and verification script
+	$(DC) -f $(TEST_COMPOSE_FILE) down --volumes --remove-orphans
+	$(DC) -f $(COMPOSE_FILE) build
+	$(DC) -f $(COMPOSE_FILE) up -d
+	sleep 5
+	@scripts/test_import_and_verify.sh
 
 .PHONY: shell
 shell: ## Open a Django shell for devlopment

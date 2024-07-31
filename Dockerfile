@@ -16,10 +16,18 @@ COPY requirements.txt /code/
 # Install project dependencies
 RUN pip install -r /code/requirements.txt
 
-# Copy the project files
-COPY . /code/
+# Copy only the necessary project files
+COPY manage.py /code/
+COPY /scripts/entrypoint.sh /code/entrypoint.sh
 
-COPY entrypoint.sh /code/entrypoint.sh
+# Copy backend and core applications
+COPY config /code/config
+COPY api /code/api
+
+# Copy settings and tests
+COPY settings /code/settings
+
+# Ensure entrypoint script is executable
 RUN chmod +x /code/entrypoint.sh
 
 # Set the entrypoint
