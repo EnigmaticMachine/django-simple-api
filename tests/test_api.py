@@ -76,15 +76,15 @@ def catalog(image, product, attribute):
 def test_import_data(api_client):
     url = reverse("import_data")
     data = [
-        {"AttributeName": {"nazev": "Barva"}},
-        {"AttributeValue": {"hodnota": "modrá"}},
-        {"AttributeValue": {"hodnota": "zelená"}},
-        {"AttributeValue": {"hodnota": "žlutá"}},
-        {"Attribute": {"nazev_atributu": 1, "hodnota_atributu": 1}},
-        {"Attribute": {"nazev_atributu": 1, "hodnota_atributu": 2}},
-        {"Attribute": {"nazev_atributu": 1, "hodnota_atributu": 3}},
+        {"attribute_name": {"nazev": "Barva"}},
+        {"attribute_value": {"hodnota": "modrá"}},
+        {"attribute_value": {"hodnota": "zelená"}},
+        {"attribute_value": {"hodnota": "žlutá"}},
+        {"attribute": {"nazev_atributu": 1, "hodnota_atributu": 1}},
+        {"attribute": {"nazev_atributu": 1, "hodnota_atributu": 2}},
+        {"attribute": {"nazev_atributu": 1, "hodnota_atributu": 3}},
         {
-            "Product": {
+            "product": {
                 "nazev": "Whirlpool B TNF 5323 OX",
                 "description": "Volně stojící kombinovaná lednička se šestým smyslem.",
                 "cena": "21566",
@@ -93,16 +93,16 @@ def test_import_data(api_client):
                 "is_published": False,
             }
         },
-        {"Image": {"obrazek": "https://free-images.com/or/4929/fridge_t_png.jpg"}},
+        {"image": {"obrazek": "https://free-images.com/or/4929/fridge_t_png.jpg"}},
         {
-            "Image": {
+            "image": {
                 "nazev": "plná lednice",
                 "obrazek": "https://free-images.com/or/ccc6/faulty_fridge_lighting_led_0.jpg",
             }
         },
-        {"ProductImage": {"product": 1, "obrazek": 1, "nazev": "hlavní foto"}},
+        {"product_image": {"product": 1, "obrazek": 1, "nazev": "hlavní foto"}},
         {
-            "Catalog": {
+            "catalog": {
                 "nazev": "Výprodej 2018",
                 "obrazek": 2,
                 "products_ids": [1],
@@ -144,7 +144,7 @@ def test_model_detail_list(api_client):
     AttributeName.objects.create(nazev="Initial Attribute")
 
     # Test initial length
-    url = reverse("model_detail_list", args=["AttributeName"])
+    url = reverse("model_detail_list", args=["attribute_name"])
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -158,7 +158,7 @@ def test_model_detail_list(api_client):
 
     # Test different model
     AttributeValue.objects.create(hodnota="Initial Value")
-    url = reverse("model_detail_list", args=["AttributeValue"])
+    url = reverse("model_detail_list", args=["attribute_value"])
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -176,17 +176,17 @@ def test_import_invalid_data_format(api_client):
 
     # Invalid data: missing 'nazev' in AttributeName
     invalid_data_1 = [
-        {"AttributeName": {"kod": "color"}},
-        {"AttributeValue": {"hodnota": "modrá"}},
+        {"attribute_name": {"kod": "color"}},
+        {"attribute_value": {"hodnota": "modrá"}},
     ]
     response = api_client.post(url, invalid_data_1, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: missing 'nazev_atributu' in Attribute
     invalid_data_2 = [
-        {"AttributeName": {"nazev": "Barva"}},
-        {"AttributeValue": {"hodnota": "modrá"}},
-        {"Attribute": {"hodnota_atributu": 1}},
+        {"attribute_name": {"nazev": "Barva"}},
+        {"attribute_value": {"hodnota": "modrá"}},
+        {"attribute": {"hodnota_atributu": 1}},
     ]
     response = api_client.post(url, invalid_data_2, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -194,7 +194,7 @@ def test_import_invalid_data_format(api_client):
     # Invalid data: missing 'nazev' in Product
     invalid_data_3 = [
         {
-            "Product": {
+            "product": {
                 "description": "Some product description",
                 "cena": "123.45",
                 "mena": "CZK",
@@ -205,24 +205,24 @@ def test_import_invalid_data_format(api_client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: missing 'product' in ProductAttributes
-    invalid_data_4 = [{"ProductAttributes": {"attribute": 1}}]
+    invalid_data_4 = [{"product_attributes": {"attribute": 1}}]
     response = api_client.post(url, invalid_data_4, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: missing 'obrazek' in Image
-    invalid_data_5 = [{"Image": {"nazev": "Image Name"}}]
+    invalid_data_5 = [{"image": {"nazev": "Image Name"}}]
     response = api_client.post(url, invalid_data_5, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: missing 'product' in ProductImage
-    invalid_data_6 = [{"ProductImage": {"obrazek": 1, "nazev": "Main Photo"}}]
+    invalid_data_6 = [{"product_image": {"obrazek": 1, "nazev": "Main Photo"}}]
     response = api_client.post(url, invalid_data_6, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: missing 'products_ids' in Catalog
     invalid_data_7 = [
         {
-            "Catalog": {
+            "catalog": {
                 "nazev": "Výprodej 2018",
                 "obrazek": 1,
                 "attributes_ids": [1, 2, 3],
@@ -234,7 +234,7 @@ def test_import_invalid_data_format(api_client):
 
     # Invalid data: missing 'attributes_ids' in Catalog
     invalid_data_8 = [
-        {"Catalog": {"nazev": "Výprodej 2018", "obrazek": 1, "products_ids": [1, 2, 3]}}
+        {"catalog": {"nazev": "Výprodej 2018", "obrazek": 1, "products_ids": [1, 2, 3]}}
     ]
     response = api_client.post(url, invalid_data_8, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -246,26 +246,26 @@ def test_import_invalid_names_in_data(api_client):
 
     # Invalid data: wrong key in AttributeName
     invalid_data_1 = [
-        {"AttributeName": {"name": "Barva"}},  # 'name' should be 'nazev'
-        {"AttributeValue": {"hodnota": "modrá"}},
+        {"attribute_name": {"name": "Barva"}},  # 'name' should be 'nazev'
+        {"attribute_value": {"hodnota": "modrá"}},
     ]
     response = api_client.post(url, invalid_data_1, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: wrong key in AttributeValue
     invalid_data_2 = [
-        {"AttributeName": {"nazev": "Barva"}},
-        {"AttributeValue": {"value": "modrá"}},  # 'value' should be 'hodnota'
+        {"attribute_name": {"nazev": "Barva"}},
+        {"attribute_value": {"value": "modrá"}},  # 'value' should be 'hodnota'
     ]
     response = api_client.post(url, invalid_data_2, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: wrong key in Attribute
     invalid_data_3 = [
-        {"AttributeName": {"nazev": "Barva"}},
-        {"AttributeValue": {"hodnota": "modrá"}},
+        {"attribute_name": {"nazev": "Barva"}},
+        {"attribute_value": {"hodnota": "modrá"}},
         {
-            "Attribute": {"atribut_nazev": 1, "hodnota_atributu": 1}
+            "attribute": {"atribut_nazev": 1, "hodnota_atributu": 1}
         },  # 'atribut_nazev' should be 'nazev_atributu'
     ]
     response = api_client.post(url, invalid_data_3, format="json")
@@ -274,7 +274,7 @@ def test_import_invalid_names_in_data(api_client):
     # Invalid data: wrong key in Product
     invalid_data_4 = [
         {
-            "Product": {
+            "product": {
                 "name": "Product 1",  # 'name' should be 'nazev'
                 "description": "Some product description",
                 "cena": "123.45",
@@ -287,21 +287,21 @@ def test_import_invalid_names_in_data(api_client):
 
     # Invalid data: wrong key in ProductAttributes
     invalid_data_5 = [
-        {"ProductAttributes": {"product_id": 1, "attribute": 1}}
+        {"product_attributes": {"product_id": 1, "attribute": 1}}
     ]  # 'product_id' should be 'product'
     response = api_client.post(url, invalid_data_5, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: wrong key in Image
     invalid_data_6 = [
-        {"Image": {"image": "http://example.com/image.jpg", "nazev": "Image Name"}}
+        {"image": {"image": "http://example.com/image.jpg", "nazev": "Image Name"}}
     ]  # 'image' should be 'obrazek'
     response = api_client.post(url, invalid_data_6, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data: wrong key in ProductImage
     invalid_data_7 = [
-        {"ProductImage": {"product_id": 1, "obrazek": 1, "nazev": "Main Photo"}}
+        {"product_image": {"product_id": 1, "obrazek": 1, "nazev": "Main Photo"}}
     ]  # 'product_id' should be 'product'
     response = api_client.post(url, invalid_data_7, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -309,7 +309,7 @@ def test_import_invalid_names_in_data(api_client):
     # Invalid data: wrong key in Catalog
     invalid_data_8 = [
         {
-            "Catalog": {
+            "catalog": {
                 "title": "Výprodej 2018",  # 'title' should be 'nazev'
                 "obrazek": 1,
                 "products_ids": [1, 2, 3],
@@ -327,10 +327,10 @@ def test_import_invalid_data_types_in_data(api_client):
 
     # Invalid data type: 'nazev_atributu' should be an integer (foreign key)
     invalid_data_1 = [
-        {"AttributeName": {"nazev": "Barva"}},
-        {"AttributeValue": {"hodnota": "modrá"}},
+        {"attribute_name": {"nazev": "Barva"}},
+        {"attribute_value": {"hodnota": "modrá"}},
         {
-            "Attribute": {"nazev_atributu": "not_an_int", "hodnota_atributu": 1}
+            "attribute": {"nazev_atributu": "not_an_int", "hodnota_atributu": 1}
         },  # 'nazev_atributu' should be an integer
     ]
     response = api_client.post(url, invalid_data_1, format="json")
@@ -338,21 +338,27 @@ def test_import_invalid_data_types_in_data(api_client):
 
     # Invalid data type: 'product' should be an integer (foreign key)
     invalid_data_2 = [
-        {"ProductAttributes": {"product": "not_an_int", "attribute": 1}}
+        {"product_attributes": {"product": "not_an_int", "attribute": 1}}
     ]  # 'product' should be an integer
     response = api_client.post(url, invalid_data_2, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data type: 'obrazek' should be a URL in Image
     invalid_data_3 = [
-        {"Image": {"obrazek": 789, "nazev": "Image Name"}}
+        {"image": {"obrazek": 789, "nazev": "Image Name"}}
     ]  # 'obrazek' should be a URL string
     response = api_client.post(url, invalid_data_3, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Invalid data type: 'product' should be an integer (foreign key) in ProductImage
     invalid_data_4 = [
-        {"ProductImage": {"product": "not_an_int", "obrazek": 1, "nazev": "Main Photo"}}
+        {
+            "product_image": {
+                "product": "not_an_int",
+                "obrazek": 1,
+                "nazev": "Main Photo",
+            }
+        }
     ]  # 'product' should be an integer
     response = api_client.post(url, invalid_data_4, format="json")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -360,7 +366,7 @@ def test_import_invalid_data_types_in_data(api_client):
     # Invalid data type: 'nazev' should be a string in Catalog
     invalid_data_5 = [
         {
-            "Catalog": {
+            "catalog": {
                 "nazev": False,  # 'nazev' should be a string
                 "obrazek": 1,
                 "products_ids": [1, 2, 3],
@@ -374,7 +380,7 @@ def test_import_invalid_data_types_in_data(api_client):
 
 @pytest.mark.django_db
 def test_model_detail(api_client, attribute_name):
-    url = reverse("model_detail", args=["AttributeName", attribute_name.id])
+    url = reverse("model_detail", args=["attribute_name", attribute_name.id])
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert response.data["nazev"] == attribute_name.nazev
@@ -382,7 +388,7 @@ def test_model_detail(api_client, attribute_name):
 
 @pytest.mark.django_db
 def test_product_detail(api_client, product):
-    url = reverse("model_detail", args=["Product", product.id])
+    url = reverse("model_detail", args=["product", product.id])
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert response.data["nazev"] == product.nazev
@@ -390,7 +396,7 @@ def test_product_detail(api_client, product):
 
 @pytest.mark.django_db
 def test_catalog_detail(api_client, catalog):
-    url = reverse("model_detail", args=["Catalog", catalog.id])
+    url = reverse("model_detail", args=["catalog", catalog.id])
     response = api_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert response.data["nazev"] == catalog.nazev

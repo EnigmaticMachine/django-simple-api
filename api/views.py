@@ -1,4 +1,3 @@
-# views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,14 +24,14 @@ from .serializers import (
 from django.shortcuts import get_object_or_404
 
 model_mapping = {
-    "AttributeName": (AttributeName, AttributeNameSerializer),
-    "AttributeValue": (AttributeValue, AttributeValueSerializer),
-    "Attribute": (Attribute, AttributeSerializer),
-    "Product": (Product, ProductSerializer),
-    "ProductAttributes": (ProductAttributes, ProductAttributesSerializer),
-    "Image": (Image, ImageSerializer),
-    "ProductImage": (ProductImage, ProductImageSerializer),
-    "Catalog": (Catalog, CatalogSerializer),
+    "attribute": (Attribute, AttributeSerializer),
+    "attribute_value": (AttributeValue, AttributeValueSerializer),
+    "attribute_name": (AttributeName, AttributeNameSerializer),
+    "product": (Product, ProductSerializer),
+    "product_attributes": (ProductAttributes, ProductAttributesSerializer),
+    "image": (Image, ImageSerializer),
+    "product_image": (ProductImage, ProductImageSerializer),
+    "catalog": (Catalog, CatalogSerializer),
 }
 
 
