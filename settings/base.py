@@ -2,7 +2,7 @@ import environ
 import os
 from pathlib import Path
 
-env = environ.Env(DEBUG=(bool, False))
+env = environ.Env(DEBUG=(bool, True))
 environ.Env.read_env(os.path.join(os.path.dirname(__file__), ".env"))
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -54,16 +54,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 DATABASES = {
     "default": {
